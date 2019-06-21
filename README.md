@@ -8,7 +8,6 @@ RUN apk add --update --no-cache ca-certificates git
 RUN addgroup -S app && adduser -S -G app app
 
 RUN mkdir /build
-# ADD . /build/
 WORKDIR /build
 COPY go.mod .
 COPY go.sum .
