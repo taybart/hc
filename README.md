@@ -9,19 +9,15 @@ RUN addgroup -S app && adduser -S -G app app
 
 RUN mkdir /build
 WORKDIR /build
-COPY go.mod .
-COPY go.sum .
 
-ARG GITHUB_ACCESS_TOKEN
-RUN git config --global url."https://${GITHUB_ACCESS_TOKEN}:@github.com/".insteadOf "https://github.com/"
-
+RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o hc github.com/taybart/hc
 
 # Download deps
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
 COPY . .
-
-RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o hc github.com/taybart/hc
 
 # Static build, strip DWARF table and debug symbols
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o main .
